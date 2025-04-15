@@ -1,0 +1,50 @@
+data :
+  name: MVTec  #MVTec #MTD #VisA 
+  data_dir: /home/hujiaqi/code_address/ad_dataset/mvtec_ad  #MVTec #VisA #MTD
+  category: screw  #['carpet', 'bottle', 'hazelnut', 'leather', 'cable', 'capsule', 'grid', 'pill', 'transistor', 'metal_nut', 'screw','toothbrush', 'zipper', 'tile', 'wood']    
+                   # ['candle', 'capsules', 'cashew', 'chewinggum', 'fryum', 'macaroni1', 'macaroni2', 'pcb1', 'pcb2' ,'pcb3', 'pcb4', 'pipe_fryum']
+  image_size: 256 
+  batch_size: 8 # 32 for DDAD and 16 for DDADS
+  DA_batch_size: 8 #16 for MVTec and [macaroni2, pcb1] in VisA, and 32 for other categories in VisA
+  test_batch_size: 8 #16 for MVTec, 32 for VisA
+  mask : True 
+  input_channel : 3
+
+
+
+model:
+  DDADS: False
+  checkpoint_dir: checkpoints/MVTec   #MTD  #MVTec  #VisA
+  checkpoint_name: weights
+  exp_name: default
+  feature_extractor: wide_resnet101_2 #wide_resnet101_2  # wide_resnet50_2 #resnet50
+  learning_rate: 3e-4 
+  weight_decay: 0.05
+  epochs: 3000
+  load_chp : 2000 # 从这个epooch开始设置检查点 每250保存一个检查点From this epoch checkpoint will be loaded. Every 250 epochs a checkpoint is saved. Try to load 750 or 1000 epochs for Visa and 1000-1500-2000 for MVTec.
+  DA_epochs: 4 # Number of epochs for 预适应.
+  DA_chp: 4
+  v : 1 #7 #  v * D_p + D_f 异常评分中的公式
+  w : 2 #条件参数。该值越大，模型对目标图像的影响就越大
+  w_DA : 3 #3 # 域自适应的条件参数。数值越大，模型对目标图像的适应程度越高
+  DLlambda : 0.1 # 0.1 for MVTec and 0.01 for VisA
+  trajectory_steps: 1000
+  test_trajectoy_steps: 250   # 去噪轨迹的起点。
+  test_trajectoy_steps_DA: 250  # S域自适应去噪轨迹的起点。
+  skip : 25   # 去噪轨迹跳过的步数。
+  skip_DA : 25
+  eta : 1 # 去噪过程的随机参数。
+  beta_start : 0.0001
+  beta_end : 0.02 
+  device: 'cuda' #<"cpu", "gpu", "tpu", "ipu">
+  save_model: True
+  num_workers : 2
+  seed : 42
+
+
+
+metrics:
+  auroc: True
+  pro: True
+  misclassifications: False
+  visualisation: False
